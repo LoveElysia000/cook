@@ -14,12 +14,18 @@ request.md
 go.work
 
 # Go 模块缓存
-go.sum
+# 注意：go.sum 通常应该提交，但如果不希望锁定依赖可以选择忽略
+# go.sum  # 取消注释以忽略 go.sum
 vendor/
 
 # 编译输出
 recipe-agent
 cook-agent
+
+# 项目特定的二进制和临时文件
+*_test_*.json
+test_*.json
+*_temp_*
 
 # IDE 配置
 .vscode/
@@ -73,3 +79,17 @@ trace.out
 
 # 文档生成
 docs/_build/
+
+# API 调试和网络配置
+*.pem
+*.key
+*.crt
+debug.log
+
+# 备份和快照文件
+*.snapshot
+*.backup-db
+*.sqlite-journal
+
+# 翻译缓存（如果需要）
+translation_cache.json
