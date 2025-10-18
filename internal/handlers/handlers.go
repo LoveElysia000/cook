@@ -11,7 +11,7 @@ import (
 func IndexHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"title": "智能食谱助手",
-		"version": "1.0.0",
+		"version": "2.1.0",
 	})
 }
 
@@ -20,7 +20,7 @@ func HealthHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 		"service": "recipe-agent",
-		"version": "1.0.0",
+		"version": "2.1.0",
 		"environment": os.Getenv("GIN_MODE"),
 	})
 }
