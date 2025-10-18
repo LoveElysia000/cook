@@ -1,0 +1,25 @@
+# 统一使用 LF 换行符，避免 Windows 和 Linux/macOS 平台差异
+* text=auto eol=lf
+*.md text=auto eol=lf
+*.go text=auto eol=lf
+*.js text=auto eol=lf
+*.css text=auto eol=lf
+*.html text=auto eol=lf
+*.json text=auto eol=lf
+*.yml text=auto eol=lf
+*.yaml text=auto eol=lf
+
+# 二进制文件和特定格式不进行转换
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# 如果特定文件需要保持格式，可以单独配置
+*.bat text eol=crlf
+*.cmd text eol=crlf

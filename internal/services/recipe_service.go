@@ -14,10 +14,11 @@ import (
 
 // RecipeService 食谱服务结构
 type RecipeService struct {
-	apiKey     string
-	baseURL    string
-	cache      map[string]*CacheEntry
-	cacheMutex sync.RWMutex
+	apiKey           string
+	baseURL          string
+	cache            map[string]*CacheEntry
+	cacheMutex       sync.RWMutex
+	translationService *TranslationService
 }
 
 // CacheEntry 缓存条目
@@ -57,108 +58,16 @@ type SpoonacularResponse struct {
 // NewRecipeService 创建食谱服务实例
 func NewRecipeService() *RecipeService {
 	return &RecipeService{
-		apiKey:  os.Getenv("SPOONACULAR_API_KEY"),
-		baseURL: "https://api.spoonacular.com/recipes",
-		cache:   make(map[string]*CacheEntry),
+		apiKey:             os.Getenv("SPOONACULAR_API_KEY"),
+		baseURL:            "https://api.spoonacular.com/recipes",
+		cache:              make(map[string]*CacheEntry),
+		translationService: NewTranslationService(),
 	}
 }
 
-// IngredientTranslation 食材中英文翻译映射
-var IngredientTranslation = map[string]string{
-	// 蛋类
-	"鸡蛋": "eggs",
-	"蛋": "eggs",
-	"鸭蛋": "duck eggs",
-	"鹌鹑蛋": "quail eggs",
-
-	// 蔬菜类
-	"西红柿": "tomato",
-	"番茄": "tomato",
-	"土豆": "potato",
-	"马铃薯": "potato",
-	"黄瓜": "cucumber",
-	"青椒": "bell pepper",
-	"红椒": "red bell pepper",
-	"胡萝卜": "carrot",
-	"白菜": "cabbage",
-	"菠菜": "spinach",
-	"芹菜": "celery",
-	"洋葱": "onion",
-	"蒜": "garlic",
-	"生姜": "ginger",
-	"姜": "ginger",
-	"韭菜": "chives",
-	"豆芽": "bean sprouts",
-	"蘑菇": "mushroom",
-	"香菇": "shiitake mushroom",
-	"金针菇": "enoki mushroom",
-
-	// 肉类
-	"猪肉": "pork",
-	"牛肉": "beef",
-	"鸡肉": "chicken",
-	"鸭肉": "duck",
-	"羊肉": "lamb",
-	"鱼肉": "fish",
-	"虾": "shrimp",
-	"蟹": "crab",
-
-	// 调料类
-	"葱": "green onion",
-	"小葱": "green onion",
-	"香菜": "cilantro",
-	"八角": "star anise",
-	"桂皮": "cinnamon",
-	"花椒": "sichuan peppercorn",
-	"料酒": "cooking wine",
-	"生抽": "light soy sauce",
-	"老抽": "dark soy sauce",
-	"陈醋": "balsamic vinegar",
-	"香油": "sesame oil",
-	"盐": "salt",
-	"糖": "sugar",
-	"白糖": "white sugar",
-	"冰糖": "rock sugar",
-
-	// 其他
-	"大米": "rice",
-	"面条": "noodles",
-	"豆腐": "tofu",
-	"豆浆": "soy milk",
-	"牛奶": "milk",
-	"面包": "bread",
-	"奶酪": "cheese",
-}
-
-// translateIngredients 翻译中文食材为英文
+// translateIngredients 翻译中文食材为英文（使用动态翻译服务）
 func (s *RecipeService) translateIngredients(ingredients []string) []string {
-	var translated []string
-	for _, ingredient := range ingredients {
-		// 如果是中文，则翻译成英文；如果是英文，直接使用
-		if english, exists := IngredientTranslation[ingredient]; exists {
-			translated = append(translated, english)
-		} else {
-			// 检查是否包含中文字符，如果包含但没有翻译映射，则跳过
-			if s.containsChinese(ingredient) {
-				// 可以跳过或使用原词，这里选择跳过避免API异常
-				continue
-			} else {
-				// 英文食材直接使用
-				translated = append(translated, ingredient)
-			}
-		}
-	}
-	return translated
-}
-
-// containsChinese 检查字符串是否包含中文字符
-func (s *RecipeService) containsChinese(str string) bool {
-	for _, r := range str {
-		if r >= rune('\u4e00') && r <= rune('\u9fff') {
-			return true
-		}
-	}
-	return false
+	return s.translationService.TranslateIngredients(ingredients)
 }
 
 // SearchByIngredients 根据食材搜索食谱
@@ -215,72 +124,9 @@ func (s *RecipeService) SearchByIngredients(ingredients []string) ([]Spoonacular
 	return recipes, nil
 }
 
-// DishTranslation 菜品中英文翻译映射
-var DishTranslation = map[string]string{
-	// 基础菜品
-	"西红柿炒鸡蛋": "scrambled eggs with tomato",
-	"番茄炒蛋": "scrambled eggs with tomato",
-	"炒鸡蛋": "scrambled eggs",
-	"蒸蛋": "steamed egg",
-	"煎蛋": "fried egg",
-	"蛋汤": "egg soup",
-	"土豆丝": "shredded potato",
-	"炒土豆丝": "stir-fried shredded potato",
-	"红烧肉": "braised pork belly",
-	"糖醋排骨": "sweet and sour pork ribs",
-	"宫保鸡丁": "kung pao chicken",
-	"麻婆豆腐": "mapo tofu",
-	"鱼香肉丝": "fish-flavored pork",
-	"青椒肉丝": "stir-fried pork with green pepper",
-	"水煮鱼": "boiled fish",
-	"回锅肉": "twice-cooked pork",
-	"酸菜鱼": "fish with pickled vegetables",
-	"火锅": "hot pot",
-	"饺子": "dumplings",
-	"面条": "noodles",
-	"炒面": "fried noodles",
-	"汤面": "noodle soup",
-	"炒饭": "fried rice",
-	"蛋炒饭": "egg fried rice",
-	"粥": "congee",
-	"白粥": "plain congee",
-	"皮蛋瘦肉粥": "preserved egg and pork congee",
-}
-
-// translateDishName 翻译中文菜名为英文
+// translateDishName 翻译中文菜名为英文（使用动态翻译服务）
 func (s *RecipeService) translateDishName(dishName string) string {
-	// 如果是中文菜名，则翻译成英文；如果是英文菜名，直接使用
-	if english, exists := DishTranslation[dishName]; exists {
-		return english
-	} else {
-		// 检查是否包含中文字符
-		if s.containsChinese(dishName) {
-			// 对于没有翻译映射的中文菜名，可以通过关键词匹配
-			if strings.Contains(dishName, "鸡蛋") || strings.Contains(dishName, "炒蛋") {
-				return "scrambled eggs"
-			} else if strings.Contains(dishName, "土豆") {
-				return "potato"
-			} else if strings.Contains(dishName, "鸡肉") || strings.Contains(dishName, "鸡") {
-				return "chicken"
-			} else if strings.Contains(dishName, "猪肉") || strings.Contains(dishName, "肉") {
-				return "pork"
-			} else if strings.Contains(dishName, "鱼") {
-				return "fish"
-			} else if strings.Contains(dishName, "豆腐") {
-				return "tofu"
-			} else if strings.Contains(dishName, "面条") || strings.Contains(dishName, "面") {
-				return "noodles"
-			} else if strings.Contains(dishName, "米饭") || strings.Contains(dishName, "饭") {
-				return "rice"
-			} else {
-				// 包含中文但无法识别的，返回空字符串避免API异常
-				return ""
-			}
-		} else {
-			// 英文菜名直接使用
-			return dishName
-		}
-	}
+	return s.translationService.TranslateDishName(dishName)
 }
 
 // SearchByDishName 根据菜品名搜索食谱
