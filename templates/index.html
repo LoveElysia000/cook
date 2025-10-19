@@ -36,13 +36,13 @@
                         <ul class="nav nav-tabs" id="searchTabs" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="ingredients-tab" data-bs-toggle="tab" data-bs-target="#ingredients" type="button" role="tab">
-                                    <i class="bi bi-basket"></i>
+                                    <i class="bi bi-basket2"></i>
                                     按食材搜索
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="dish-tab" data-bs-toggle="tab" data-bs-target="#dish" type="button" role="tab">
-                                    <i class="bi bi-search"></i>
+                                    <i class="bi bi-book"></i>
                                     按菜名搜索
                                 </button>
                             </li>
@@ -56,10 +56,24 @@
                                     <div class="mb-3">
                                         <label for="ingredientTags" class="form-label">食材标签</label>
                                         <div class="ingredient-input-container">
-                                            <input type="text" class="form-control" id="ingredientInput" placeholder="输入食材名称，按回车添加">
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-carrot"></i></span>
+                                                <input type="text" class="form-control" id="ingredientInput" placeholder="输入食材名称，按回车添加">
+                                            </div>
                                             <div class="ingredient-tags" id="ingredientTags"></div>
                                         </div>
                                         <div class="form-text">输入食材后按回车键添加标签，如：鸡蛋、西红柿、青菜等</div>
+
+                                        <!-- 搜索建议提示 -->
+                                        <div class="search-hints">
+                                            <h4><i class="bi bi-lightbulb"></i> 智能推荐</h4>
+                                            <ul>
+                                                <li>🥚 蛋类：鸡蛋、鸭蛋、鹅蛋</li>
+                                                <li>🥬 蔬菜：西红柿、青菜、土豆、萝卜</li>
+                                                <li>🥩 肉类：猪肉、牛肉、鸡肉、鱼肉</li>
+                                                <li>🌾 调料：生姜、大蒜、葱、香菜</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -69,8 +83,22 @@
                                 <form id="dishForm">
                                     <div class="mb-3">
                                         <label for="dishName" class="form-label">菜品名称</label>
-                                        <input type="text" class="form-control" id="dishName" placeholder="请输入菜名，如：红烧肉、宫保鸡丁">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-egg-fried"></i></span>
+                                            <input type="text" class="form-control" id="dishName" placeholder="请输入菜名，如：红烧肉、宫保鸡丁">
+                                        </div>
                                         <div class="form-text">支持各种菜品的搜索，支持中文名称</div>
+
+                                        <!-- 搜索建议提示 -->
+                                        <div class="search-hints">
+                                            <h4><i class="bi bi-book"></i> 热门菜品</h4>
+                                            <ul>
+                                                <li>🥘 家常菜：红烧肉、糖醋排骨、麻婆豆腐</li>
+                                                <li>🍛 地方菜：宫保鸡丁、水煮鱼、清蒸鲈鱼</li>
+                                                <li>🥣 汤类：西红柿鸡蛋汤、冬瓜排骨汤</li>
+                                                <li>🍜 面食：炸酱面、牛肉面、刀削面</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -79,11 +107,11 @@
                         <!-- 搜索按钮 -->
                         <div class="search-actions">
                             <button type="button" class="btn btn-primary btn-lg search-btn" id="searchBtn">
-                                <i class="bi bi-magic"></i>
+                                <i class="bi bi-lightbulb"></i>
                                 智能分析
                             </button>
                             <button type="button" class="btn btn-outline-secondary btn-lg" id="clearBtn">
-                                <i class="bi bi-arrow-clockwise"></i>
+                                <i class="bi bi-arrow-counterclockwise"></i>
                                 清空
                             </button>
                         </div>
