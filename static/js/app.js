@@ -113,10 +113,16 @@ class RecipeAssistant {
     renderIngredientTags() {
         this.ingredientTags.innerHTML = '';
 
+        // 移除 has-tags 类
+        this.ingredientTags.classList.remove('has-tags');
+
         if (this.ingredients.length === 0) {
             this.ingredientTags.innerHTML = '<span class="text-muted">暂无食材，请在上方输入食材并按回车添加</span>';
             return;
         }
+
+        // 添加 has-tags 类以显示正确的样式
+        this.ingredientTags.classList.add('has-tags');
 
         this.ingredients.forEach((ingredient, index) => {
             const tag = document.createElement('span');
@@ -237,8 +243,14 @@ class RecipeAssistant {
             this.showSupplementaryData(data.supplementaryData);
         }
 
+        // 先移除动画类，再添加以确保动画重新触发
+        this.resultContainer.classList.remove('show');
+
+        // 触发重绘以重新开始动画
+        void this.resultContainer.offsetWidth;
+
         // 添加动画效果
-        this.resultContainer.classList.add('fade-in');
+        this.resultContainer.classList.add('show');
 
         // 滚动到结果区域
         this.scrollToResult();
