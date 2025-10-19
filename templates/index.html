@@ -9,174 +9,210 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <!-- 头部 -->
-        <header class="header">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h1 class="app-title">
-                        <i class="bi bi-egg-fried"></i>
-                        智能食谱助手
-                    </h1>
-                    <p class="app-subtitle">基于AI的智能烹饪指导，让每一餐都充满创意</p>
+    <!-- 顶部导航栏 -->
+    <nav class="main-nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <i class="bi bi-egg-fried"></i>
+                    <div class="brand-text">
+                        <h1 class="brand-name">智能食谱助手</h1>
+                        <p class="brand-subtitle">AI烹饪指导专家</p>
+                    </div>
                 </div>
-                <div class="col-md-4 text-end">
-                    <span class="version-badge">v{{.version}}</span>
+                <div class="nav-actions">
+                    <button type="button" class="btn btn-outline-light btn-sm" id="menuBtn">
+                        <i class="bi bi-book"></i>
+                        查看菜单
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm" id="quickAnalysisBtn">
+                        <i class="bi bi-lightbulb"></i>
+                        快速分析
+                    </button>
                 </div>
             </div>
-        </header>
+        </div>
+    </nav>
 
-        <!-- 主要内容区 -->
-        <main class="main-content">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <!-- 输入区域 -->
-                    <div class="search-card">
-                        <!-- 标签页切换 -->
-                        <ul class="nav nav-tabs" id="searchTabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="ingredients-tab" data-bs-toggle="tab" data-bs-target="#ingredients" type="button" role="tab">
-                                    <i class="bi bi-basket2"></i>
-                                    按食材搜索
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="dish-tab" data-bs-toggle="tab" data-bs-target="#dish" type="button" role="tab">
-                                    <i class="bi bi-book"></i>
-                                    按菜名搜索
-                                </button>
-                            </li>
-                        </ul>
+    <div class="main-wrapper">
+        <div class="container">
+        <!-- 主搜索区域 -->
+        <section class="smart-search-section">
+            <div class="search-header">
+                <h2 class="search-title">
+                    <i class="bi bi-search"></i>
+                    智能搜索
+                </h2>
+                <p class="search-subtitle">输入食材或菜品名称，AI为您推荐美味佳肴</p>
+            </div>
 
-                        <!-- 标签内容 -->
-                        <div class="tab-content" id="searchTabsContent">
-                            <!-- 按食材搜索 -->
-                            <div class="tab-pane fade show active" id="ingredients" role="tabpanel">
-                                <form id="ingredientsForm">
-                                    <div class="mb-3">
-                                        <label for="ingredientTags" class="form-label">食材标签</label>
-                                        <div class="ingredient-input-container">
-                                            <div class="input-group">
-                                                <span class="input-group-text"><i class="bi bi-carrot"></i></span>
-                                                <input type="text" class="form-control" id="ingredientInput" placeholder="输入食材名称，按回车添加">
-                                            </div>
-                                            <div class="ingredient-tags" id="ingredientTags"></div>
-                                        </div>
-                                        <div class="form-text">输入食材后按回车键添加标签，如：鸡蛋、西红柿、青菜等</div>
+            <div class="smart-search-container">
+                <div class="search-input-wrapper">
+                    <div class="search-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <input type="text"
+                           class="smart-search-input"
+                           id="smartSearchInput"
+                           placeholder="输入食材(如：鸡蛋、西红柿)或菜名(如：红烧肉)..."
+                           autocomplete="off">
+                    <div class="search-type-indicator" id="searchTypeIndicator">
+                        <span class="type-badge" id="typeBadge">
+                            <i class="bi bi-basket2"></i>
+                            食材模式
+                        </span>
+                    </div>
+                </div>
 
-                                        <!-- 搜索建议提示 -->
-                                        <div class="search-hints">
-                                            <h4><i class="bi bi-lightbulb"></i> 智能推荐</h4>
-                                            <ul>
-                                                <li>🥚 蛋类：鸡蛋、鸭蛋、鹅蛋</li>
-                                                <li>🥬 蔬菜：西红柿、青菜、土豆、萝卜</li>
-                                                <li>🥩 肉类：猪肉、牛肉、鸡肉、鱼肉</li>
-                                                <li>🌾 调料：生姜、大蒜、葱、香菜</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
+                <!-- 自动补全下拉框 -->
+                <div class="autocomplete-dropdown" id="autocompleteDropdown" style="display: none;">
+                    <div class="autocomplete-items" id="autocompleteItems"></div>
+                </div>
 
-                            <!-- 按菜名搜索 -->
-                            <div class="tab-pane fade" id="dish" role="tabpanel">
-                                <form id="dishForm">
-                                    <div class="mb-3">
-                                        <label for="dishName" class="form-label">菜品名称</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-egg-fried"></i></span>
-                                            <input type="text" class="form-control" id="dishName" placeholder="请输入菜名，如：红烧肉、宫保鸡丁">
-                                        </div>
-                                        <div class="form-text">支持各种菜品的搜索，支持中文名称</div>
+                <!-- 食材标签显示区域 -->
+                <div class="ingredients-display" id="ingredientsDisplay" style="display: none;">
+                    <label class="ingredients-label">已选食材：</label>
+                    <div class="ingredient-tags compact" id="ingredientTagsCompact"></div>
+                    <div class="ingredients-management-hint">
+                        <i class="bi bi-info-circle"></i>
+                        <span>单击删除，双击编辑食材名称</span>
+                    </div>
+                </div>
 
-                                        <!-- 搜索建议提示 -->
-                                        <div class="search-hints">
-                                            <h4><i class="bi bi-book"></i> 热门菜品</h4>
-                                            <ul>
-                                                <li>🥘 家常菜：红烧肉、糖醋排骨、麻婆豆腐</li>
-                                                <li>🍛 地方菜：宫保鸡丁、水煮鱼、清蒸鲈鱼</li>
-                                                <li>🥣 汤类：西红柿鸡蛋汤、冬瓜排骨汤</li>
-                                                <li>🍜 面食：炸酱面、牛肉面、刀削面</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <!-- 搜索按钮 -->
-                        <div class="search-actions">
-                            <button type="button" class="btn btn-primary btn-lg search-btn" id="searchBtn">
-                                <i class="bi bi-lightbulb"></i>
-                                智能分析
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-lg" id="clearBtn">
-                                <i class="bi bi-arrow-counterclockwise"></i>
-                                清空
-                            </button>
+                <!-- 搜索提示 -->
+                <div class="smart-search-hints">
+                    <div class="hint-tabs">
+                        <button class="hint-tab active" data-hint="ingredients">
+                            <i class="bi bi-carrot"></i>
+                            食材推荐
+                        </button>
+                        <button class="hint-tab" data-hint="dishes">
+                            <i class="bi bi-book"></i>
+                            热门菜品
+                        </button>
+                        <button class="hint-tab" data-hint="seasonal">
+                            <i class="bi bi-calendar"></i>
+                            时令推荐
+                        </button>
+                    </div>
+                    <div class="hint-content" id="hintContent">
+                       <div class="hint-items">
+                            <span class="hint-item">🥚 鸡蛋、鸭蛋</span>
+                            <span class="hint-item">🥬 西红柿、青菜</span>
+                            <span class="hint-item">🥩 猪肉、鸡肉</span>
+                            <span class="hint-item">🥕 土豆、萝卜</span>
                         </div>
                     </div>
+                </div>
 
-                    <!-- 加载状态 -->
-                    <div class="loading-container" id="loadingContainer" style="display: none;">
-                        <div class="text-center">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">分析中...</span>
-                            </div>
-                            <p class="mt-3 loading-text">AI正在精心分析，请稍候...</p>
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- 操作按钮 -->
+                <div class="search-actions">
+                    <button type="button" class="btn btn-primary btn-lg smart-search-btn" id="searchBtn">
+                        <i class="bi bi-robot"></i>
+                        智能分析
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-lg" id="voiceSearchBtn">
+                        <i class="bi bi-mic"></i>
+                        语音搜索
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="clearBtn">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        清空
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 加载状态 -->
+        <div class="loading-container" id="loadingContainer" style="display: none;">
+            <div class="text-center">
+                <!-- 厨师帽加载图标 -->
+                <div class="loading-icon-chef" id="chefLoader"></div>
+
+                <!-- 搅拌勺加载图标（备选） -->
+                <div class="loading-icon-spoon" id="spoonLoader" style="display: none;"></div>
+
+                <!-- 动态加载文本 -->
+                <p class="mt-3 loading-text-animated" id="dynamicLoadingText">AI厨师正在分析食材...</p>
+
+                <!-- 步骤指示器 -->
+                <div class="analysis-steps" id="analysisSteps">
+                    <div class="analysis-step" data-step="1"></div>
+                    <div class="analysis-step" data-step="2"></div>
+                    <div class="analysis-step" data-step="3"></div>
+                    <div class="analysis-step" data-step="4"></div>
+                </div>
+
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
 
                     <!-- 结果展示区域 -->
-                    <div class="result-container" id="resultContainer" style="display: none;">
-                        <div class="result-header">
-                            <h3 class="result-title">
-                                <i class="bi bi-lightbulb"></i>
-                                智能分析结果
-                            </h3>
-                            <div class="result-meta">
-                                <span class="badge bg-success" id="serveCount"></span>
-                                <span class="text-muted" id="timestamp"></span>
-                            </div>
-                        </div>
-
-                        <div class="result-content" id="resultContent">
-                            <!-- 结果内容将在这里显示 -->
-                        </div>
-
-                        <!-- 附加信息 -->
-                        <div class="supplementary-info" id="supplementaryInfo" style="display: none;">
-                            <div class="accordion" id="supplementaryAccordion">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingSupplementary">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSupplementary">
-                                            <i class="bi bi-info-circle"></i>
-                                            附加信息
-                                        </button>
-                                    </h2>
-                                    <div id="collapseSupplementary" class="accordion-collapse collapse" data-bs-parent="#supplementaryAccordion">
-                                        <div class="accordion-body" id="supplementaryContent">
-                                            <!-- 附加信息内容 -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        <section class="results-section" id="resultsSection" style="display: none;">
+            <div class="results-header">
+                <h3 class="results-title">
+                    <i class="bi bi-lightbulb"></i>
+                    智能分析结果
+                </h3>
+                <div class="results-actions">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="clearResultsBtn">
+                        <i class="bi bi-x-lg"></i>
+                        清空结果
+                    </button>
+                    <div class="results-meta">
+                        <span class="badge bg-primary" id="serveCount"></span>
+                        <span class="text-muted ms-2" id="timestamp"></span>
                     </div>
+                </div>
+            </div>
 
-                    <!-- 错误提示 -->
-                    <div class="error-container" id="errorContainer" style="display: none;">
-                        <div class="alert alert-danger" role="alert">
-                            <i class="bi bi-exclamation-triangle"></i>
-                            <span id="errorMessage"></span>
+            <div class="recipe-cards-container" id="recipeCardsContainer">
+                <!-- 菜谱卡片将在这里显示 -->
+            </div>
+
+            <!-- 详细结果展开区域 -->
+            <div class="result-details" id="resultDetails" style="display: none;">
+                <div class="details-header">
+                    <h4 class="details-title">
+                        <i class="bi bi-file-text"></i>
+                        详细信息
+                    </h4>
+                    <button type="button" class="btn-close" id="closeDetailsBtn"></button>
+                </div>
+                <div class="details-content" id="detailsContent">
+                    <!-- 详细内容 -->
+                </div>
+            </div>
+
+            <!-- 附加信息 -->
+            <div class="supplementary-info" id="supplementaryInfo" style="display: none;">
+                <div class="accordion" id="supplementaryAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingSupplementary">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSupplementary">
+                                <i class="bi bi-info-circle"></i>
+                                附加信息
+                            </button>
+                        </h2>
+                        <div id="collapseSupplementary" class="accordion-collapse collapse" data-bs-parent="#supplementaryAccordion">
+                            <div class="accordion-body" id="supplementaryContent">
+                                <!-- 附加信息内容 -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
+        </section>
+
+        <!-- 错误提示 -->
+        <div class="error-container" id="errorContainer" style="display: none;">
+            <div class="alert alert-danger" role="alert">
+                <i class="bi bi-exclamation-triangle"></i>
+                <span id="errorMessage"></span>
+            </div>
+        </div>
 
         <!-- 页脚 -->
         <footer class="footer">
@@ -192,7 +228,8 @@
                 </div>
             </div>
         </footer>
-    </div>
+        </div>
+    </div><!-- 关闭main-wrapper -->
 
     <!-- 错误模态框 -->
     <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
